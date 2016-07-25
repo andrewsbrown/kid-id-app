@@ -28,7 +28,7 @@
  * ====================================================================
  */
 
-package edu.cmu.pocketsphinx.demo;
+package edu.pdx.anb2;
 
 import android.Manifest;
 import android.app.Activity;
