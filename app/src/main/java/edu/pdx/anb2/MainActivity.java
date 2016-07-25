@@ -55,7 +55,7 @@ import edu.cmu.pocketsphinx.SpeechRecognizerSetup;
 
 import static android.widget.Toast.makeText;
 
-public class PocketSphinxActivity extends Activity implements
+public class MainActivity extends Activity implements
         RecognitionListener {
 
     /* Named searches allow to quickly reconfigure the decoder */
@@ -114,7 +114,7 @@ public class PocketSphinxActivity extends Activity implements
             @Override
             protected Exception doInBackground(Void... params) {
                 try {
-                    Assets assets = new Assets(PocketSphinxActivity.this);
+                    Assets assets = new Assets(MainActivity.this);
                     File assetDir = assets.syncAssets();
                     setupRecognizer(assetDir);
                 } catch (IOException e) {

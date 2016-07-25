@@ -3,20 +3,15 @@ package edu.pdx.anb2;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import java.io.File;
 
 import edu.cmu.pocketsphinx.Hypothesis;
 import edu.cmu.pocketsphinx.RecognitionListener;
-import edu.pdx.anb2.*;
 
 import static android.widget.Toast.makeText;
 
@@ -123,19 +118,19 @@ public class ChildModeActivity extends AppCompatActivity {
 
         // setup listener
         ChildModeListener listener = new ChildModeListener();
-        PocketSphinxActivity.recognizer.addListener(listener);
+        MainActivity.recognizer.addListener(listener);
         listen();
     }
 
     private void listen() {
         Log.d(ChildModeActivity.class.getSimpleName(), "Start listening");
-        PocketSphinxActivity.recognizer.stop();
-        PocketSphinxActivity.recognizer.startListening("animals");
+        MainActivity.recognizer.stop();
+        MainActivity.recognizer.startListening("animals");
     }
 
     private void stop(){
         Log.d(ChildModeActivity.class.getSimpleName(), "Stop listening");
-        PocketSphinxActivity.recognizer.stop();
+        MainActivity.recognizer.stop();
     }
 
     class ChildModeListener implements RecognitionListener {
