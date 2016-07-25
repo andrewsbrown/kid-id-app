@@ -37,11 +37,11 @@ public class IllustrationViewPager extends ViewPager {
         setAdapter(new IllustrationImageAdapter(context));
     }
 
-    public boolean matches(String text){
+    public boolean matches(String text) {
         return IMAGES[getCurrentItem()].name.equals(text);
     }
 
-    public void enablePaging(){
+    public void enablePaging() {
         Log.d(IllustrationViewPager.class.getSimpleName(), "Enable paging");
         allowPaging = true;
         setBackgroundColor(getResources().getColor(R.color.pagingEnabled));
@@ -55,12 +55,18 @@ public class IllustrationViewPager extends ViewPager {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        return allowPaging;
+        if (allowPaging) {
+            return super.onTouchEvent(event);
+        }
+        return false;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        return allowPaging;
+        if (allowPaging) {
+            return super.onTouchEvent(event);
+        }
+        return false;
     }
 
     class Illustration {

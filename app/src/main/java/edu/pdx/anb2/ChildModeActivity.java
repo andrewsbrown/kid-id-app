@@ -131,7 +131,6 @@ public class ChildModeActivity extends AppCompatActivity {
         Log.d(ChildModeActivity.class.getSimpleName(), "Start listening");
         PocketSphinxActivity.recognizer.stop();
         PocketSphinxActivity.recognizer.startListening("animals");
-        ((TextView) findViewById(R.id.resultText)).setText("Listening...");
     }
 
     private void stop(){
@@ -153,7 +152,6 @@ public class ChildModeActivity extends AppCompatActivity {
 
         @Override
         public void onPartialResult(Hypothesis hypothesis) {
-            ((TextView) findViewById(R.id.resultText)).setText("");
             if (hypothesis != null) {
                 String text = hypothesis.getHypstr();
                 makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
@@ -162,24 +160,24 @@ public class ChildModeActivity extends AppCompatActivity {
 
         @Override
         public void onResult(Hypothesis hypothesis) {
-            ((TextView) findViewById(R.id.resultText)).setText("");
             if (hypothesis != null) {
                 String text = hypothesis.getHypstr();
                 makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
 
                 IllustrationViewPager pager = (IllustrationViewPager) findViewById(R.id.illustrationViewPager);
+                assert pager != null;
                 if(pager.matches(text)){
                     pager.enablePaging();
                     stop();
                 } else {
-                    ((TextView) findViewById(R.id.resultText)).setText("Failed to match.");
+                    makeText(getApplicationContext(), "Failed to match", Toast.LENGTH_SHORT).show();
                 }
             }
         }
 
         @Override
         public void onError(Exception e) {
-            ((TextView) findViewById(R.id.resultText)).setText(e.getMessage());
+            makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
         @Override
