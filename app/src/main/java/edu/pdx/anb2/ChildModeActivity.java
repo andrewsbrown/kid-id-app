@@ -106,10 +106,7 @@ public class ChildModeActivity extends AppCompatActivity {
         });
 
         // setup slider
-        IllustrationViewPager mViewPager = (IllustrationViewPager) findViewById(R.id.viewPageAndroid);
-        AndroidImageAdapter adapterView = new AndroidImageAdapter(this);
-        assert mViewPager != null;
-        mViewPager.setAdapter(adapterView);
+        IllustrationViewPager mViewPager = (IllustrationViewPager) findViewById(R.id.illustrationViewPager);
 
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away

@@ -18,7 +18,7 @@
         tools:context=".ChildModeActivity">
 
         <edu.pdx.anb2.IllustrationViewPager
-            android:id="@+id/viewPageAndroid"
+            android:id="@+id/illustrationViewPager"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </RelativeLayout>
