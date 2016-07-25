@@ -26,15 +26,18 @@ public class IllustrationViewPager extends ViewPager {
     };
 
     private volatile boolean allowPaging = false;
+    private int lastPage = 0;
 
     public IllustrationViewPager(Context context) {
         super(context);
         setAdapter(new IllustrationImageAdapter(context));
+        addOnPageChangeListener(new DisableOnScroll());
     }
 
     public IllustrationViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
         setAdapter(new IllustrationImageAdapter(context));
+        addOnPageChangeListener(new DisableOnScroll());
     }
 
     public boolean matches(String text) {
@@ -55,18 +58,30 @@ public class IllustrationViewPager extends ViewPager {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        if (allowPaging) {
-            return super.onTouchEvent(event);
-        }
-        return false;
+        return allowPaging && super.onTouchEvent(event);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (allowPaging) {
-            return super.onTouchEvent(event);
+        return allowPaging && super.onTouchEvent(event);
+    }
+
+    class DisableOnScroll implements OnPageChangeListener {
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
         }
-        return false;
+
+        @Override
+        public void onPageSelected(int position) {
+
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+            if(state == ViewPager.SCROLL_STATE_SETTLING){
+                disablePaging();
+            }
+        }
     }
 
     class Illustration {
