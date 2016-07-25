@@ -71,7 +71,7 @@ public class PocketSphinxActivity extends Activity implements
     /* Used to handle permission request */
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
 
-    private SpeechRecognizer recognizer;
+    public static SpeechRecognizer recognizer;
     private HashMap<String, Integer> captions;
 
     @Override
@@ -235,7 +235,7 @@ public class PocketSphinxActivity extends Activity implements
 
 
                 .getRecognizer();
-        recognizer.addListener(this);
+        // recognizer.addListener(this);
 
         /** In your application you might not need to add all those searches.
          * They are added here for demonstration. You can leave just one.
@@ -251,6 +251,10 @@ public class PocketSphinxActivity extends Activity implements
         // Create grammar-based search for digit recognition
         File digitsGrammar = new File(assetsDir, "digits.gram");
         recognizer.addGrammarSearch(DIGITS_SEARCH, digitsGrammar);
+
+        // Create grammar-based search for digit recognition
+        File animalsGrammar = new File(assetsDir, "animals.gram");
+        recognizer.addGrammarSearch("animals", animalsGrammar);
 
         // Create language model search
         File languageModel = new File(assetsDir, "weather.dmp");

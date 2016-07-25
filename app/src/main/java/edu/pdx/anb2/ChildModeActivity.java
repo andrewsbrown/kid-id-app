@@ -6,10 +6,19 @@ import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.File;
+
+import edu.cmu.pocketsphinx.Hypothesis;
+import edu.cmu.pocketsphinx.RecognitionListener;
 import edu.pdx.anb2.*;
+
+import static android.widget.Toast.makeText;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -96,7 +105,6 @@ public class ChildModeActivity extends AppCompatActivity {
         // mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
 
-
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,6 +120,72 @@ public class ChildModeActivity extends AppCompatActivity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         mViewPager.setOnTouchListener(mDelayHideTouchListener);
+
+        // setup listener
+        ChildModeListener listener = new ChildModeListener();
+        PocketSphinxActivity.recognizer.addListener(listener);
+        listen();
+    }
+
+    private void listen() {
+        Log.d(ChildModeActivity.class.getSimpleName(), "Start listening");
+        PocketSphinxActivity.recognizer.stop();
+        PocketSphinxActivity.recognizer.startListening("animals");
+        ((TextView) findViewById(R.id.resultText)).setText("Listening...");
+    }
+
+    private void stop(){
+        Log.d(ChildModeActivity.class.getSimpleName(), "Stop listening");
+        PocketSphinxActivity.recognizer.stop();
+    }
+
+    class ChildModeListener implements RecognitionListener {
+
+        @Override
+        public void onBeginningOfSpeech() {
+
+        }
+
+        @Override
+        public void onEndOfSpeech() {
+            listen();
+        }
+
+        @Override
+        public void onPartialResult(Hypothesis hypothesis) {
+            ((TextView) findViewById(R.id.resultText)).setText("");
+            if (hypothesis != null) {
+                String text = hypothesis.getHypstr();
+                makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        public void onResult(Hypothesis hypothesis) {
+            ((TextView) findViewById(R.id.resultText)).setText("");
+            if (hypothesis != null) {
+                String text = hypothesis.getHypstr();
+                makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+
+                IllustrationViewPager pager = (IllustrationViewPager) findViewById(R.id.illustrationViewPager);
+                if(pager.matches(text)){
+                    pager.enablePaging();
+                    stop();
+                } else {
+                    ((TextView) findViewById(R.id.resultText)).setText("Failed to match.");
+                }
+            }
+        }
+
+        @Override
+        public void onError(Exception e) {
+            ((TextView) findViewById(R.id.resultText)).setText(e.getMessage());
+        }
+
+        @Override
+        public void onTimeout() {
+            listen();
+        }
     }
 
     @Override

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,8 @@ public class IllustrationViewPager extends ViewPager {
             new Illustration(R.drawable.tiger, "tiger")
     };
 
+    private volatile boolean allowPaging = false;
+
     public IllustrationViewPager(Context context) {
         super(context);
         setAdapter(new IllustrationImageAdapter(context));
@@ -34,16 +37,30 @@ public class IllustrationViewPager extends ViewPager {
         setAdapter(new IllustrationImageAdapter(context));
     }
 
+    public boolean matches(String text){
+        return IMAGES[getCurrentItem()].name.equals(text);
+    }
+
+    public void enablePaging(){
+        Log.d(IllustrationViewPager.class.getSimpleName(), "Enable paging");
+        allowPaging = true;
+        setBackgroundColor(getResources().getColor(R.color.pagingEnabled));
+    }
+
+    public void disablePaging() {
+        Log.d(IllustrationViewPager.class.getSimpleName(), "Disable paging");
+        allowPaging = false;
+        setBackgroundColor(getResources().getColor(R.color.pagingDisabled));
+    }
+
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        // Never allow swiping to switch between pages
-        return false;
+        return allowPaging;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        // Never allow swiping to switch between pages
-        return false;
+        return allowPaging;
     }
 
     class Illustration {

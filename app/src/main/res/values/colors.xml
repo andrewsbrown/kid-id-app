@@ -5,4 +5,6 @@
     <color name="colorAccent">#FF4081</color>
 
     <color name="black_overlay">#66000000</color>
+    <color name="pagingDisabled">#0099cc</color>
+    <color name="pagingEnabled">#4CAF50</color>
 </resources>
