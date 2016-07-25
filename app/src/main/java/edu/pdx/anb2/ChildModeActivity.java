@@ -3,6 +3,7 @@ package edu.pdx.anb2;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
@@ -51,7 +52,7 @@ public class ChildModeActivity extends AppCompatActivity {
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         }
     };
-    private View mControlsView;
+    // private View mControlsView;
     private final Runnable mShowPart2Runnable = new Runnable() {
         @Override
         public void run() {
@@ -60,7 +61,7 @@ public class ChildModeActivity extends AppCompatActivity {
             if (actionBar != null) {
                 actionBar.show();
             }
-            mControlsView.setVisibility(View.VISIBLE);
+            // mControlsView.setVisibility(View.VISIBLE);
         }
     };
     private boolean mVisible;
@@ -92,7 +93,7 @@ public class ChildModeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_child_mode);
 
         mVisible = true;
-        mControlsView = findViewById(R.id.fullscreen_content_controls);
+        // mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
 
 
@@ -104,10 +105,16 @@ public class ChildModeActivity extends AppCompatActivity {
             }
         });
 
+        // setup slider
+        ViewPager mViewPager = (ViewPager) findViewById(R.id.viewPageAndroid);
+        AndroidImageAdapter adapterView = new AndroidImageAdapter(this);
+        assert mViewPager != null;
+        mViewPager.setAdapter(adapterView);
+
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+        mViewPager.setOnTouchListener(mDelayHideTouchListener);
     }
 
     @Override
@@ -134,7 +141,7 @@ public class ChildModeActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.hide();
         }
-        mControlsView.setVisibility(View.GONE);
+        // mControlsView.setVisibility(View.GONE);
         mVisible = false;
 
         // Schedule a runnable to remove the status and navigation bar after a delay

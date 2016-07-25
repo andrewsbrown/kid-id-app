@@ -13,6 +13,7 @@
         <activity
             android:name=".PocketSphinxActivity"
             android:label="@string/app_name">
+
             <!-- android:theme="@style/AppTheme.NoActionBar" -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,10 +22,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="edu.pdx.anb2.ChildModeActivity"
+            android:name=".ChildModeActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_child_mode"
-            android:theme="@style/FullscreenTheme"></activity>
+            android:theme="@style/FullscreenTheme" />
     </application>
 
 </manifest>
