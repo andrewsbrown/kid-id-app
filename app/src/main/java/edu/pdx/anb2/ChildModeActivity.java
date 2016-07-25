@@ -106,7 +106,7 @@ public class ChildModeActivity extends AppCompatActivity {
         });
 
         // setup slider
-        ViewPager mViewPager = (ViewPager) findViewById(R.id.viewPageAndroid);
+        IllustrationViewPager mViewPager = (IllustrationViewPager) findViewById(R.id.viewPageAndroid);
         AndroidImageAdapter adapterView = new AndroidImageAdapter(this);
         assert mViewPager != null;
         mViewPager.setAdapter(adapterView);
