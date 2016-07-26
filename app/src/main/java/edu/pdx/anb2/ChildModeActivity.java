@@ -12,9 +12,6 @@ import android.widget.Toast;
 
 import edu.cmu.pocketsphinx.Hypothesis;
 import edu.cmu.pocketsphinx.RecognitionListener;
-import edu.cmu.pocketsphinx.SpeechRecognizerSetup;
-
-import static android.widget.Toast.makeText;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -76,6 +73,7 @@ public class ChildModeActivity extends AppCompatActivity {
             hide();
         }
     };
+
     /**
      * Touch listener to use for in-layout UI controls to delay hiding the
      * system UI. This is to prevent the jarring behavior of controls going away
@@ -90,7 +88,9 @@ public class ChildModeActivity extends AppCompatActivity {
             return false;
         }
     };
+
     private IllustrationViewPager pager;
+    private Toast lastToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,7 +179,9 @@ public class ChildModeActivity extends AppCompatActivity {
     }
 
     private void toast(String text) {
-        makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+        if(lastToast != null) lastToast.cancel();
+        lastToast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+        lastToast.show();
     }
 
     @Override
