@@ -61,15 +61,9 @@ public class MainActivity extends Activity {
         // setup status text
         ((TextView) findViewById(R.id.captionText)).setText(R.string.preparing_recognizer);
 
-        // setup child mode button
-        Button childModeButton = (Button) findViewById(R.id.childModeButton);
-        childModeButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), ChildModeActivity.class);
-                startActivity(intent);
-            }
-        });
-
+        // setup buttons
+        WidgetHelper.goTo(this, ChildModeActivity.class, R.id.childModeButton);
+        WidgetHelper.goTo(this, AdultModeActivity.class, R.id.adultModeButton);
 
         // check for audio permissions before setting up
         if (hasAudioRecordingPermissions(this)) {
