@@ -13,4 +13,6 @@
 
     <string name="title_activity_fullscreen">FullscreenActivity</string>
     <string name="preparing_recognizer">Preparing the speech recognizer</string>
+    <string name="failed_speech">"Failed to start speech recognition: "</string>
+    <string name="started_speech">Started speech recognition</string>
 </resources>

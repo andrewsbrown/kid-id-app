@@ -56,11 +56,10 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle state) {
         super.onCreate(state);
-
-        // Prepare the data for UI
         setContentView(R.layout.main);
-        ((TextView) findViewById(R.id.caption_text))
-                .setText(R.string.preparing_recognizer);
+
+        // setup status text
+        ((TextView) findViewById(R.id.captionText)).setText(R.string.preparing_recognizer);
 
         // setup child mode button
         Button childModeButton = (Button) findViewById(R.id.childModeButton);
@@ -116,9 +115,9 @@ public class MainActivity extends Activity {
             @Override
             protected void onPostExecute(Exception result) {
                 if (result != null) {
-                    makeText(getApplicationContext(), "Failed to start speech recognition: " + result, Toast.LENGTH_SHORT).show();
+                    ((TextView) findViewById(R.id.captionText)).setText(getString(R.string.failed_speech) + result);
                 } else {
-                    makeText(getApplicationContext(), "Started speech recognition", Toast.LENGTH_SHORT).show();
+                    ((TextView) findViewById(R.id.captionText)).setText(R.string.started_speech);
                     findViewById(R.id.childModeButton).setEnabled(true);
                 }
             }
