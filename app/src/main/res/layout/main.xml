@@ -17,13 +17,12 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:gravity="center">
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Enter Child Mode"
+            android:text="@string/enter_child_mode"
             android:id="@+id/childModeButton"
             android:layout_gravity="bottom"
             android:enabled="false" />
