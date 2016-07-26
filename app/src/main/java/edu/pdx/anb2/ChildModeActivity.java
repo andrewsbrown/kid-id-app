@@ -150,11 +150,6 @@ public class ChildModeActivity extends AppCompatActivity {
 
         @Override
         public void onPartialResult(Hypothesis hypothesis) {
-
-        }
-
-        @Override
-        public void onResult(Hypothesis hypothesis) {
             if (hypothesis != null) {
                 String text = hypothesis.getHypstr();
                 toast(hypothesis.getHypstr());
@@ -165,6 +160,11 @@ public class ChildModeActivity extends AppCompatActivity {
                     toast("Failed to match");
                 }
             }
+        }
+
+        @Override
+        public void onResult(Hypothesis hypothesis) {
+
         }
 
         @Override
