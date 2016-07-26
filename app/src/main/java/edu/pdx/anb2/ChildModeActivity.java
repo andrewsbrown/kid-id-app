@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import edu.cmu.pocketsphinx.Hypothesis;
 import edu.cmu.pocketsphinx.RecognitionListener;
+import edu.cmu.pocketsphinx.SpeechRecognizerSetup;
 
 import static android.widget.Toast.makeText;
 
@@ -114,23 +115,24 @@ public class ChildModeActivity extends AppCompatActivity {
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
+        assert mViewPager != null;
         mViewPager.setOnTouchListener(mDelayHideTouchListener);
 
         // setup listener
         ChildModeListener listener = new ChildModeListener();
-        MainActivity.recognizer.addListener(listener);
+        SpeechRecognizerSingleton.getInstance().addListener(listener);
         listen();
     }
 
     private void listen() {
         Log.d(ChildModeActivity.class.getSimpleName(), "Start listening");
-        MainActivity.recognizer.stop();
-        MainActivity.recognizer.startListening("animals");
+        SpeechRecognizerSingleton.getInstance().stop();
+        SpeechRecognizerSingleton.getInstance().startListening(SpeechRecognizerSingleton.ANIMALS_GRAMMAR);
     }
 
-    private void stop(){
+    private void stop() {
         Log.d(ChildModeActivity.class.getSimpleName(), "Stop listening");
-        MainActivity.recognizer.stop();
+        SpeechRecognizerSingleton.getInstance().stop();
     }
 
     class ChildModeListener implements RecognitionListener {
@@ -148,8 +150,7 @@ public class ChildModeActivity extends AppCompatActivity {
         @Override
         public void onPartialResult(Hypothesis hypothesis) {
             if (hypothesis != null) {
-                String text = hypothesis.getHypstr();
-                makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+                toast(hypothesis.getHypstr());
             }
         }
 
@@ -157,28 +158,33 @@ public class ChildModeActivity extends AppCompatActivity {
         public void onResult(Hypothesis hypothesis) {
             if (hypothesis != null) {
                 String text = hypothesis.getHypstr();
-                makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+                toast(hypothesis.getHypstr());
 
                 IllustrationViewPager pager = (IllustrationViewPager) findViewById(R.id.illustrationViewPager);
                 assert pager != null;
-                if(pager.matches(text)){
+
+                if (pager.matches(text)) {
                     pager.enablePaging();
                     stop();
                 } else {
-                    makeText(getApplicationContext(), "Failed to match", Toast.LENGTH_SHORT).show();
+                    toast("Failed to match");
                 }
             }
         }
 
         @Override
         public void onError(Exception e) {
-            makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            toast("Error: " + e.getMessage());
         }
 
         @Override
         public void onTimeout() {
             listen();
         }
+    }
+
+    private void toast(String text) {
+        makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
     }
 
     @Override
