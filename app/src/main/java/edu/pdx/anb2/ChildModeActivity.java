@@ -131,7 +131,7 @@ public class ChildModeActivity extends AppCompatActivity {
         SpeechRecognizerSingleton.getInstance().startListening(SpeechRecognizerSingleton.ANIMALS_GRAMMAR);
     }
 
-    private void stop() {
+    private void stopListening() {
         Log.d(ChildModeActivity.class.getSimpleName(), "Stop listening");
         SpeechRecognizerSingleton.getInstance().stop();
     }
@@ -180,6 +180,12 @@ public class ChildModeActivity extends AppCompatActivity {
 
     private void toast(String text) {
         makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        stopListening();
     }
 
     @Override
