@@ -90,6 +90,7 @@ public class ChildModeActivity extends AppCompatActivity {
             return false;
         }
     };
+    private IllustrationViewPager pager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,13 +111,13 @@ public class ChildModeActivity extends AppCompatActivity {
         });
 
         // setup slider
-        IllustrationViewPager mViewPager = (IllustrationViewPager) findViewById(R.id.illustrationViewPager);
+        pager = (IllustrationViewPager) findViewById(R.id.illustrationViewPager);
+        assert pager != null;
 
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        assert mViewPager != null;
-        mViewPager.setOnTouchListener(mDelayHideTouchListener);
+        pager.setOnTouchListener(mDelayHideTouchListener);
 
         // setup listener
         ChildModeListener listener = new ChildModeListener();
@@ -149,9 +150,7 @@ public class ChildModeActivity extends AppCompatActivity {
 
         @Override
         public void onPartialResult(Hypothesis hypothesis) {
-            if (hypothesis != null) {
-                toast(hypothesis.getHypstr());
-            }
+
         }
 
         @Override
@@ -160,12 +159,8 @@ public class ChildModeActivity extends AppCompatActivity {
                 String text = hypothesis.getHypstr();
                 toast(hypothesis.getHypstr());
 
-                IllustrationViewPager pager = (IllustrationViewPager) findViewById(R.id.illustrationViewPager);
-                assert pager != null;
-
                 if (pager.matches(text)) {
                     pager.enablePaging();
-                    stop();
                 } else {
                     toast("Failed to match");
                 }
