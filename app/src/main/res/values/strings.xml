@@ -28,4 +28,9 @@
     <string name="category">Category</string>
     <string name="level">Level</string>
     <string name="help">Help</string>
+    <string name="choose_category">Choose a category to change the illustrations your child will see:</string>
+    <string name="choose_level">Choose a level to change the difficulty of the illustrations:</string>
+    <string name="currently_unavailable">Currently unavailable</string>
+    <string name="presentation">Presentation</string>
+    <string name="in_progress">In progress</string>
 </resources>

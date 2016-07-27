@@ -2,6 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/navPresentation"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="@string/presentation" />
+        <item
             android:id="@+id/navChildMode"
             android:icon="@drawable/ic_child_care_black_24dp"
             android:title="@string/child_mode" />

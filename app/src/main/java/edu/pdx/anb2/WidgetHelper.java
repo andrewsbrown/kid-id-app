@@ -13,16 +13,20 @@ import android.widget.TableRow;
 
 public class WidgetHelper {
 
-    static Button goTo(final Activity from, final Class<? extends Activity> to, @IdRes int button) {
+    static Button linkTo(final Activity from, final Class<? extends Activity> to, @IdRes int button) {
         Button b = (Button) from.findViewById(button);
         assert b != null;
         b.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent(from.getApplicationContext(), to);
-                from.startActivity(intent);
+                goTo(from, to);
             }
         });
         return b;
+    }
+
+    static void goTo(final Activity from, final Class<? extends Activity> to) {
+        Intent intent = new Intent(from.getApplicationContext(), to);
+        from.startActivity(intent);
     }
 
     static <T> Spinner populateSpinner(final Activity activity, @IdRes int spinnerResource, T[] items) {
