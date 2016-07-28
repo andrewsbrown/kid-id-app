@@ -5,6 +5,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 public class AdultModeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -24,14 +27,14 @@ public class AdultModeActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//            }
+//        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -43,6 +46,8 @@ public class AdultModeActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         changeContentPanel(R.layout.content_presentation_mode);
+
+        populateImageSlider(R.id.imagePicker);
     }
 
     @Override
@@ -109,5 +114,46 @@ public class AdultModeActivity extends AppCompatActivity
         assert contentPanel != null;
         contentPanel.removeAllViews();
         contentPanel.addView(View.inflate(this, contentLayout, null));
+    }
+
+    void changeChildModeView(int image){
+        ImageView childModeView = (ImageView) findViewById(R.id.childModeView);
+        assert childModeView != null;
+        childModeView.setImageResource(image);
+    }
+
+    void populateImageSlider(int imageSliderLayout){
+        LinearLayout imageSlider = (LinearLayout) findViewById(imageSliderLayout);
+        assert imageSlider != null;
+        imageSlider.removeAllViews();
+
+        for(Illustration i : Illustration.ALL){
+            ImageView image = new ImageView(this);
+
+            image.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(256, 256);
+            params.setMargins(0, 0, 8, 0);
+            image.setLayoutParams(params);
+            image.setBackgroundResource(R.drawable.border);
+            image.setImageResource(i.image);
+
+            image.setClickable(true);
+            image.setOnClickListener(new NextImageOnClickListener(i));
+
+            imageSlider.addView(image);
+        }
+    }
+
+    private class NextImageOnClickListener implements View.OnClickListener {
+        private final Illustration i;
+
+        public NextImageOnClickListener(Illustration i) {
+            this.i = i;
+        }
+
+        @Override
+        public void onClick(View v) {
+            changeChildModeView(i.image);
+        }
     }
 }

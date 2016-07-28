@@ -12,19 +12,6 @@ import android.widget.ImageView;
 
 public class IllustrationViewPager extends ViewPager {
 
-    private Illustration[] IMAGES = new Illustration[]{
-            new Illustration(R.drawable.bear, "bear"),
-            new Illustration(R.drawable.dog, "dog"),
-            new Illustration(R.drawable.elephant, "elephant"),
-            new Illustration(R.drawable.giraffe, "giraffe"),
-            new Illustration(R.drawable.horse, "horse"),
-            new Illustration(R.drawable.kangaroo, "kangaroo"),
-            new Illustration(R.drawable.lion, "lion"),
-            new Illustration(R.drawable.peacock, "peacock"),
-            new Illustration(R.drawable.rhino, "rhino"),
-            new Illustration(R.drawable.tiger, "tiger")
-    };
-
     private volatile boolean allowPaging = false;
     private int lastPage = 0;
 
@@ -41,7 +28,7 @@ public class IllustrationViewPager extends ViewPager {
     }
 
     public boolean matches(String text) {
-        return IMAGES[getCurrentItem()].name.equals(text);
+        return Illustration.ALL[getCurrentItem()].name.equals(text);
     }
 
     public void enablePaging() {
@@ -84,16 +71,6 @@ public class IllustrationViewPager extends ViewPager {
         }
     }
 
-    class Illustration {
-        public final int image;
-        public final String name;
-
-        public Illustration(int image, String name) {
-            this.image = image;
-            this.name = name;
-        }
-    }
-
     class IllustrationImageAdapter extends PagerAdapter {
         Context mContext;
 
@@ -103,7 +80,7 @@ public class IllustrationViewPager extends ViewPager {
 
         @Override
         public int getCount() {
-            return IMAGES.length;
+            return Illustration.ALL.length;
         }
 
         @Override
@@ -115,7 +92,7 @@ public class IllustrationViewPager extends ViewPager {
         public Object instantiateItem(ViewGroup container, int i) {
             ImageView mImageView = new ImageView(mContext);
             mImageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            mImageView.setImageResource(IMAGES[i].image);
+            mImageView.setImageResource(Illustration.ALL[i].image);
             ((ViewPager) container).addView(mImageView, 0);
             return mImageView;
         }
