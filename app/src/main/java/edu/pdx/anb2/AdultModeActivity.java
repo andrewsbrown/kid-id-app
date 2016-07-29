@@ -1,11 +1,8 @@
 package edu.pdx.anb2;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +10,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -48,6 +47,18 @@ public class AdultModeActivity extends AppCompatActivity
         changeContentPanel(R.layout.content_presentation_mode);
 
         populateImageSlider(R.id.imagePicker);
+
+        // check box hides image picker
+        CheckBox chooseIllustrationCheckbox = (CheckBox) findViewById(R.id.chooseIllustrationsCheckbox);
+        assert chooseIllustrationCheckbox != null;
+        chooseIllustrationCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                LinearLayout imageSlider = (LinearLayout) findViewById(R.id.imagePicker);
+                assert imageSlider != null;
+                imageSlider.setVisibility(isChecked ? LinearLayout.VISIBLE : LinearLayout.GONE);
+            }
+        });
     }
 
     @Override
@@ -116,18 +127,18 @@ public class AdultModeActivity extends AppCompatActivity
         contentPanel.addView(View.inflate(this, contentLayout, null));
     }
 
-    void changeChildModeView(int image){
+    void changeChildModeView(int image) {
         ImageView childModeView = (ImageView) findViewById(R.id.childModeView);
         assert childModeView != null;
         childModeView.setImageResource(image);
     }
 
-    void populateImageSlider(int imageSliderLayout){
+    void populateImageSlider(int imageSliderLayout) {
         LinearLayout imageSlider = (LinearLayout) findViewById(imageSliderLayout);
         assert imageSlider != null;
         imageSlider.removeAllViews();
 
-        for(Illustration i : Illustration.ALL){
+        for (Illustration i : Illustration.ALL) {
             ImageView image = new ImageView(this);
 
             image.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
