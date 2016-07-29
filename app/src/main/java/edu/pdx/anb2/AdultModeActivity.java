@@ -1,5 +1,6 @@
 package edu.pdx.anb2;
 
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -57,6 +58,16 @@ public class AdultModeActivity extends AppCompatActivity
                 LinearLayout imageSlider = (LinearLayout) findViewById(R.id.imagePicker);
                 assert imageSlider != null;
                 imageSlider.setVisibility(isChecked ? LinearLayout.VISIBLE : LinearLayout.GONE);
+            }
+        });
+
+        final ImageView approvalButton = (ImageView) findViewById(R.id.childModeApprovalButton);
+        assert approvalButton != null;
+        approvalButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final int successColor = getResources().getColor(R.color.success);
+                approvalButton.setColorFilter(successColor, PorterDuff.Mode.SRC_ATOP);
             }
         });
     }
@@ -131,6 +142,10 @@ public class AdultModeActivity extends AppCompatActivity
         ImageView childModeView = (ImageView) findViewById(R.id.childModeView);
         assert childModeView != null;
         childModeView.setImageResource(image);
+
+        final ImageView approvalButton = (ImageView) findViewById(R.id.childModeApprovalButton);
+        assert approvalButton != null;
+        approvalButton.clearColorFilter();
     }
 
     void populateImageSlider(int imageSliderLayout) {
