@@ -11,6 +11,13 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
 
+    <string name="password_tool_tip">Enter a number</string>
+    <string name="help_layout">Welcome to kid ID app\n\n\n 1.To pair with another android device click on pair\n
+        2. To enter password click on passcode \n
+        3. To see a list of images click on catagory\n
+        4. To play images autonomously click on presentation mode
+    </string>
+
     <string name="title_activity_fullscreen">FullscreenActivity</string>
     <string name="preparing_recognizer">Preparing the speech recognizer</string>
     <string name="failed_speech">"Failed to start speech recognition: "</string>
