@@ -12,6 +12,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="In progress" />
+        android:text="Password" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="numberPassword"
+        android:layout_marginLeft="4dp"
+        android:layout_marginTop="70dp"
+        android:gravity="left"
+        android:ems="10"
+        android:hint="@string/password_tool_tip"
+        android:id="@+id/editText" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ok"
+        android:id="@+id/passwordOkButton"
+        android:layout_gravity="center_horizontal" />
 
 </LinearLayout>
