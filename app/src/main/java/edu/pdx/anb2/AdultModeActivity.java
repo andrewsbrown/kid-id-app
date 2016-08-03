@@ -1,5 +1,8 @@
 package edu.pdx.anb2;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -11,16 +14,28 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SimpleAdapter;
+import android.widget.Spinner;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import edu.pdx.anb2.illustration.Illustration;
 
 public class AdultModeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private static final int REQUEST_ENABLE_BT = 23833;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +124,7 @@ public class AdultModeActivity extends AppCompatActivity
             WidgetHelper.goTo(this, ChildModeActivity.class);
         } else if (id == R.id.navPair) {
             changeContentPanel(R.layout.content_pair);
+            setupBluetoothWidgets();
         } else if (id == R.id.navPasscode) {
             changeContentPanel(R.layout.content_passcode);
         } else if (id == R.id.navCategory) {
@@ -174,5 +190,52 @@ public class AdultModeActivity extends AppCompatActivity
         public void onClick(View v) {
             changeChildModeView(i.image);
         }
+    }
+
+    void setupBluetoothWidgets() {
+        Button enableBluetoothButton = (Button) findViewById(R.id.enableBluetoothButton);
+        assert enableBluetoothButton != null;
+
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
+            enableBluetoothButton.setText(R.string.no_bluetooth);
+            return;
+        }
+
+        if (!mBluetoothAdapter.isEnabled()) {
+            enableBluetoothButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+                }
+            });
+            enableBluetoothButton.setEnabled(true);
+        } else {
+            enableBluetoothButton.setText(R.string.enabled);
+            enableBluetoothButton.setEnabled(false);
+        }
+
+        // setup paired devices spinner
+        Spinner devicesSpinner = (Spinner) findViewById(R.id.devicesSpinner);
+        assert devicesSpinner != null;
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item);
+        devicesSpinner.setAdapter(spinnerArrayAdapter);
+
+        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+        for (BluetoothDevice device : pairedDevices) {
+            spinnerArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+        }
+
+        // test connection
+        Button connectButton = (Button) findViewById(R.id.connectButton);
+        assert connectButton != null;
+        connectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO
+            }
+        });
     }
 }

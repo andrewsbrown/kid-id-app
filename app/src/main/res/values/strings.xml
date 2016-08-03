@@ -33,4 +33,14 @@
     <string name="currently_unavailable">Currently unavailable</string>
     <string name="presentation">Presentation</string>
     <string name="in_progress">In progress</string>
+    <string name="no_bluetooth">No Bluetooth</string>
+    <string name="enabled">Enabled</string>
+    <string name="_4">4</string>
+    <string name="_3">3</string>
+    <string name="_2">2</string>
+    <string name="_1">1</string>
+    <string name="enable_bluetooth">Enable Bluetooth</string>
+    <string name="enable">Enable</string>
+    <string name="use_the_system_settings_to_pair_your_devices">Use the system settings to pair your devices</string>
+    <string name="choose_a_device">Choose a device:</string>
 </resources>
