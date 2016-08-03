@@ -17,6 +17,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import edu.pdx.anb2.illustration.Illustration;
+
 public class AdultModeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -26,15 +28,6 @@ public class AdultModeActivity extends AppCompatActivity
         setContentView(R.layout.activity_adult_mode);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(

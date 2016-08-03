@@ -16,7 +16,7 @@
         android:paddingTop="@dimen/activity_vertical_margin"
         android:keepScreenOn="true">
 
-        <edu.pdx.anb2.IllustrationViewPager
+        <edu.pdx.anb2.illustration.IllustrationViewPager
             android:id="@+id/illustrationViewPager"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

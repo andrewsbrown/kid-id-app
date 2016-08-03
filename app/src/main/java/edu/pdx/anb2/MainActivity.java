@@ -43,6 +43,8 @@ import android.widget.Toast;
 
 import java.io.IOException;
 
+import edu.pdx.anb2.speech.SpeechRecognizerSingleton;
+
 import static android.widget.Toast.makeText;
 
 public class MainActivity extends Activity {

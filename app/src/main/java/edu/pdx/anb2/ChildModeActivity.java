@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 import edu.cmu.pocketsphinx.Hypothesis;
 import edu.cmu.pocketsphinx.RecognitionListener;
+import edu.pdx.anb2.illustration.IllustrationViewPager;
+import edu.pdx.anb2.speech.SpeechRecognizerSingleton;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
