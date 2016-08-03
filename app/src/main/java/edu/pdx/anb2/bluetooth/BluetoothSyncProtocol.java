@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class BluetoothSyncProtocol {
-    private boolean listening = true;
     private final DataInputStream in;
     private final DataOutputStream out;
     private BluetoothApplicationState currentState;
@@ -22,27 +21,15 @@ public class BluetoothSyncProtocol {
     public BluetoothSyncProtocol(InputStream in, OutputStream out) {
         this.in = new DataInputStream(in);
         this.out = new DataOutputStream(out);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (listening) {
-                    try {
-                        BluetoothApplicationState newState = read();
-                        BluetoothApplicationState oldState = currentState;
-                        synchronized (BluetoothSyncProtocol.this) {
-                            currentState = newState;
-                        }
-                        triggerObserver(oldState, newState);
-                    } catch (IOException e) {
-                        Log.e(BluetoothApplicationState.class.getSimpleName(), "Failed while reading Bluetooth", e);
-                    }
-                }
-            }
-        }).start();
     }
 
-    public void stop() {
-        listening = false;
+    public void listenForStateChange() throws IOException {
+        BluetoothApplicationState newState = read();
+        BluetoothApplicationState oldState = currentState;
+        synchronized (BluetoothSyncProtocol.this) {
+            currentState = newState;
+        }
+        triggerObserver(oldState, newState);
     }
 
     public BluetoothApplicationState read() throws IOException {
