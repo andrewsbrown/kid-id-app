@@ -43,4 +43,11 @@
     <string name="enable">Enable</string>
     <string name="use_the_system_settings_to_pair_your_devices">Use the system settings to pair your devices</string>
     <string name="choose_a_device">Choose a device:</string>
+
+    <string name="password_tool_tip">Enter a number</string>
+    <string name="help_layout">Welcome to kid ID app\n\n\n 1.To pair with another android device click on pair\n
+        2. To enter password click on passcode \n
+        3. To see a list of images click on catagory\n
+        4. To play images autonomously click on presentation mode
+    </string>
 </resources>
