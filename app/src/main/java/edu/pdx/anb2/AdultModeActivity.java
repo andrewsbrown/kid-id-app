@@ -14,6 +14,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,15 +31,19 @@ import android.widget.Toast;
 import java.util.Set;
 
 import edu.pdx.anb2.bluetooth.Bluetooth;
+import edu.pdx.anb2.bluetooth.BluetoothApplicationState;
+import edu.pdx.anb2.bluetooth.BluetoothMessages;
 import edu.pdx.anb2.illustration.Illustration;
 
 public class AdultModeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String TOAST_TAG = AdultModeActivity.class.getSimpleName();
     private static final int REQUEST_ENABLE_BT = 23833;
     private Handler mHandler;
     private Bluetooth bluetooth;
     private Toast lastToast;
+    private int currentIllustration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,45 +59,71 @@ public class AdultModeActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        assert navigationView != null;
         navigationView.setNavigationItemSelectedListener(this);
-
-        changeContentPanel(R.layout.content_presentation_mode);
-
-        populateImageSlider(R.id.imagePicker);
-
-        // check box hides image picker
-        CheckBox chooseIllustrationCheckbox = (CheckBox) findViewById(R.id.chooseIllustrationsCheckbox);
-        assert chooseIllustrationCheckbox != null;
-        chooseIllustrationCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                LinearLayout imageSlider = (LinearLayout) findViewById(R.id.imagePicker);
-                assert imageSlider != null;
-                imageSlider.setVisibility(isChecked ? LinearLayout.VISIBLE : LinearLayout.GONE);
-            }
-        });
-
-        final ImageView approvalButton = (ImageView) findViewById(R.id.childModeApprovalButton);
-        assert approvalButton != null;
-        approvalButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final int successColor = getResources().getColor(R.color.success);
-                approvalButton.setColorFilter(successColor, PorterDuff.Mode.SRC_ATOP);
-            }
-        });
 
         // setup message handler
         mHandler = new Handler(Looper.getMainLooper()) {
             public void handleMessage(Message msg) {
-                if (lastToast != null) lastToast.cancel();
-                lastToast = Toast.makeText(AdultModeActivity.this, (String) msg.obj, Toast.LENGTH_SHORT);
-                lastToast.show();
+                switch (msg.what) {
+                    case BluetoothMessages.SYNC_TAG:
+                        onReceivedSync((BluetoothApplicationState) msg.obj);
+                        break;
+                    case BluetoothMessages.TOAST_TAG:
+                        toast((String) msg.obj);
+                        break;
+                    default:
+                        Log.w(TOAST_TAG, "Unknown message type to handle");
+                }
             }
         };
 
-        // setup bluetooth service
-        bluetooth = new Bluetooth(this, mHandler);
+        bluetooth = new Bluetooth(mHandler);
+        changeContentPanel(R.layout.content_presentation_mode);
+        setupPresentationWidgets();
+    }
+
+    private int currentIllustration() {
+        return currentIllustration;
+    }
+
+    private void sendSync(BluetoothApplicationState state) {
+        bluetooth.sendSync(state);
+    }
+
+    void setupPresentationWidgets() {
+        populateImageSlider(R.id.imagePicker);
+        setupSliderHideCheckbox();
+        setupChildModeApprovalButton();
+    }
+
+    private void onReceivedSync(BluetoothApplicationState obj) {
+        changeChildModeIllustration(obj.illustration);
+        changeChildModeSuccess(obj.success);
+    }
+
+    void changeChildModeIllustration(int image) {
+        ImageView childModeView = (ImageView) findViewById(R.id.childModeView);
+        assert childModeView != null;
+        childModeView.setImageResource(image);
+        currentIllustration = image;
+    }
+
+    private void changeChildModeSuccess(boolean success) {
+        final ImageView approvalButton = (ImageView) findViewById(R.id.childModeApprovalButton);
+        assert approvalButton != null;
+        if (success) {
+            int successColor = getResources().getColor(R.color.success);
+            approvalButton.setColorFilter(successColor, PorterDuff.Mode.SRC_ATOP);
+        } else {
+            approvalButton.clearColorFilter();
+        }
+    }
+
+    private void toast(String message) {
+        if (lastToast != null) lastToast.cancel();
+        lastToast = Toast.makeText(AdultModeActivity.this, message, Toast.LENGTH_SHORT);
+        lastToast.show();
     }
 
     @Override
@@ -135,6 +166,7 @@ public class AdultModeActivity extends AppCompatActivity
 
         if (id == R.id.navPresentation) {
             changeContentPanel(R.layout.content_presentation_mode);
+            setupPresentationWidgets();
         } else if (id == R.id.navChildMode) {
             WidgetHelper.goTo(this, ChildModeActivity.class);
         } else if (id == R.id.navPair) {
@@ -160,16 +192,6 @@ public class AdultModeActivity extends AppCompatActivity
         assert contentPanel != null;
         contentPanel.removeAllViews();
         contentPanel.addView(View.inflate(this, contentLayout, null));
-    }
-
-    void changeChildModeView(int image) {
-        ImageView childModeView = (ImageView) findViewById(R.id.childModeView);
-        assert childModeView != null;
-        childModeView.setImageResource(image);
-
-        final ImageView approvalButton = (ImageView) findViewById(R.id.childModeApprovalButton);
-        assert approvalButton != null;
-        approvalButton.clearColorFilter();
     }
 
     void populateImageSlider(int imageSliderLayout) {
@@ -203,21 +225,28 @@ public class AdultModeActivity extends AppCompatActivity
 
         @Override
         public void onClick(View v) {
-            changeChildModeView(i.image);
+            changeChildModeIllustration(i.image);
+            changeChildModeSuccess(false);
+            sendSync(new BluetoothApplicationState(i.image, false));
         }
     }
 
     void setupBluetoothWidgets() {
+        setupBluetoothEnableButton();
+        final Spinner devices = populateBluetoothSpinner();
+        setupBluetoothConnectButton(devices);
+    }
+
+    Button setupBluetoothEnableButton() {
         Button enableBluetoothButton = (Button) findViewById(R.id.enableBluetoothButton);
         assert enableBluetoothButton != null;
 
-        final BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (mBluetoothAdapter == null) {
+        if (bluetooth.adapter() == null) {
             enableBluetoothButton.setText(R.string.no_bluetooth);
-            return;
+            return enableBluetoothButton;
         }
 
-        if (!mBluetoothAdapter.isEnabled()) {
+        if (!bluetooth.adapter().isEnabled()) {
             enableBluetoothButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -231,45 +260,64 @@ public class AdultModeActivity extends AppCompatActivity
             enableBluetoothButton.setEnabled(false);
         }
 
-        // setup paired devices spinner
+        return enableBluetoothButton;
+    }
+
+    Spinner populateBluetoothSpinner() {
         final Spinner devicesSpinner = (Spinner) findViewById(R.id.devicesSpinner);
         assert devicesSpinner != null;
-        final ArrayAdapter<DeviceItem> spinnerArrayAdapter = new ArrayAdapter<>(this,
+        final ArrayAdapter<DeviceSpinnerItem> spinnerArrayAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item);
+
+        if (bluetooth.adapter() != null) {
+            Set<BluetoothDevice> pairedDevices = bluetooth.adapter().getBondedDevices();
+            for (BluetoothDevice device : pairedDevices) {
+                spinnerArrayAdapter.add(new DeviceSpinnerItem(device));
+            }
+        }
         devicesSpinner.setAdapter(spinnerArrayAdapter);
 
-        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-        for (BluetoothDevice device : pairedDevices) {
-            spinnerArrayAdapter.add(new DeviceItem(device));
-        }
+        return devicesSpinner;
+    }
 
-        // test connection
+    Button setupBluetoothConnectButton(final Spinner devices) {
         Button connectButton = (Button) findViewById(R.id.connectButton);
         assert connectButton != null;
+
         connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 bluetooth.start();
-                DeviceItem item = spinnerArrayAdapter.getItem(devicesSpinner.getSelectedItemPosition());
+                DeviceSpinnerItem item = (DeviceSpinnerItem) devices.getAdapter().getItem(devices.getSelectedItemPosition());
                 bluetooth.connect(item.device, false);
+            }
+        });
+
+        return connectButton;
+    }
+
+    void setupChildModeApprovalButton() {
+        final ImageView approvalButton = (ImageView) findViewById(R.id.childModeApprovalButton);
+        assert approvalButton != null;
+        approvalButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeChildModeSuccess(true);
+                sendSync(new BluetoothApplicationState(currentIllustration(), true));
             }
         });
     }
 
-    private class DeviceItem {
-        public final String id;
-        public final String name;
-        public final BluetoothDevice device;
-
-        public DeviceItem(BluetoothDevice device) {
-            this.device = device;
-            this.id = device.getAddress();
-            this.name = device.getName();
-        }
-
-        @Override
-        public String toString() {
-            return name + "\n" + id;
-        }
+    void setupSliderHideCheckbox() {
+        CheckBox chooseIllustrationCheckbox = (CheckBox) findViewById(R.id.chooseIllustrationsCheckbox);
+        assert chooseIllustrationCheckbox != null;
+        chooseIllustrationCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                LinearLayout imageSlider = (LinearLayout) findViewById(R.id.imagePicker);
+                assert imageSlider != null;
+                imageSlider.setVisibility(isChecked ? LinearLayout.VISIBLE : LinearLayout.GONE);
+            }
+        });
     }
 }

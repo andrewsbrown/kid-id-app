@@ -8,9 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class BluetoothSyncProtocol {
-    private final DataInputStream in;
-    private final DataOutputStream out;
+class BluetoothSyncProtocol {
+    private DataInputStream in;
+    private DataOutputStream out;
     private BluetoothApplicationState currentState;
     private OnChange observer;
 
@@ -18,9 +18,13 @@ public class BluetoothSyncProtocol {
         void onChange(BluetoothApplicationState oldState, BluetoothApplicationState newState);
     }
 
-    public BluetoothSyncProtocol(InputStream in, OutputStream out) {
+    public void onNewConnection(InputStream in, OutputStream out) {
         this.in = new DataInputStream(in);
         this.out = new DataOutputStream(out);
+    }
+
+    public void onChange(OnChange observer) {
+        this.observer = observer;
     }
 
     public void listenForStateChange() throws IOException {
@@ -33,12 +37,14 @@ public class BluetoothSyncProtocol {
     }
 
     public BluetoothApplicationState read() throws IOException {
+        verifyConnection();
         int i = in.readInt();
         boolean b = in.readBoolean();
         return new BluetoothApplicationState(i, b);
     }
 
     public void write(BluetoothApplicationState newState) throws IOException {
+        verifyConnection();
         BluetoothApplicationState oldState = currentState;
         synchronized (this) {
             out.writeInt(newState.illustration);
@@ -48,13 +54,15 @@ public class BluetoothSyncProtocol {
         triggerObserver(oldState, newState);
     }
 
-    public void onChange(OnChange observer) throws IOException {
-        this.observer = observer;
-    }
-
     void triggerObserver(BluetoothApplicationState oldState, BluetoothApplicationState newState) {
         if (observer != null) {
             observer.onChange(oldState, newState);
+        }
+    }
+
+    void verifyConnection() throws IOException {
+        if (in == null || out == null) {
+            throw new IOException("No connected stream available");
         }
     }
 }
