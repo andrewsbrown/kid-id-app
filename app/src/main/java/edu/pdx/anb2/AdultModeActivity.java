@@ -5,6 +5,9 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -21,21 +24,21 @@ import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.SimpleAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
+import edu.pdx.anb2.bluetooth.Bluetooth;
 import edu.pdx.anb2.illustration.Illustration;
 
 public class AdultModeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int REQUEST_ENABLE_BT = 23833;
+    private Handler mHandler;
+    private Bluetooth bluetooth;
+    private Toast lastToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +81,18 @@ public class AdultModeActivity extends AppCompatActivity
                 approvalButton.setColorFilter(successColor, PorterDuff.Mode.SRC_ATOP);
             }
         });
+
+        // setup message handler
+        mHandler = new Handler(Looper.getMainLooper()) {
+            public void handleMessage(Message msg) {
+                if (lastToast != null) lastToast.cancel();
+                lastToast = Toast.makeText(AdultModeActivity.this, (String) msg.obj, Toast.LENGTH_SHORT);
+                lastToast.show();
+            }
+        };
+
+        // setup bluetooth service
+        bluetooth = new Bluetooth(this, mHandler);
     }
 
     @Override
@@ -196,7 +211,7 @@ public class AdultModeActivity extends AppCompatActivity
         Button enableBluetoothButton = (Button) findViewById(R.id.enableBluetoothButton);
         assert enableBluetoothButton != null;
 
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        final BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
             enableBluetoothButton.setText(R.string.no_bluetooth);
             return;
@@ -217,15 +232,15 @@ public class AdultModeActivity extends AppCompatActivity
         }
 
         // setup paired devices spinner
-        Spinner devicesSpinner = (Spinner) findViewById(R.id.devicesSpinner);
+        final Spinner devicesSpinner = (Spinner) findViewById(R.id.devicesSpinner);
         assert devicesSpinner != null;
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(this,
+        final ArrayAdapter<DeviceItem> spinnerArrayAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item);
         devicesSpinner.setAdapter(spinnerArrayAdapter);
 
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
         for (BluetoothDevice device : pairedDevices) {
-            spinnerArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+            spinnerArrayAdapter.add(new DeviceItem(device));
         }
 
         // test connection
@@ -234,8 +249,27 @@ public class AdultModeActivity extends AppCompatActivity
         connectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO
+                bluetooth.start();
+                DeviceItem item = spinnerArrayAdapter.getItem(devicesSpinner.getSelectedItemPosition());
+                bluetooth.connect(item.device, false);
             }
         });
+    }
+
+    private class DeviceItem {
+        public final String id;
+        public final String name;
+        public final BluetoothDevice device;
+
+        public DeviceItem(BluetoothDevice device) {
+            this.device = device;
+            this.id = device.getAddress();
+            this.name = device.getName();
+        }
+
+        @Override
+        public String toString() {
+            return name + "\n" + id;
+        }
     }
 }
