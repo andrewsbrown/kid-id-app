@@ -32,9 +32,9 @@ import android.widget.Toast;
 
 import java.util.Set;
 
-import edu.pdx.anb2.bluetooth.Bluetooth;
 import edu.pdx.anb2.bluetooth.BluetoothApplicationState;
 import edu.pdx.anb2.bluetooth.BluetoothMessages;
+import edu.pdx.anb2.bluetooth.BluetoothService;
 import edu.pdx.anb2.illustration.Illustration;
 
 public class AdultModeActivity extends AppCompatActivity
@@ -43,7 +43,7 @@ public class AdultModeActivity extends AppCompatActivity
     private static final String TOAST_TAG = AdultModeActivity.class.getSimpleName();
     private static final int REQUEST_ENABLE_BT = 23833;
     private Handler mHandler;
-    private Bluetooth bluetooth;
+    private BluetoothService bluetooth;
     private Toast lastToast;
     private int currentIllustration;
 
@@ -80,7 +80,7 @@ public class AdultModeActivity extends AppCompatActivity
             }
         };
 
-        bluetooth = new Bluetooth(mHandler);
+        bluetooth = new BluetoothService(mHandler);
         changeContentPanel(R.layout.content_presentation_mode);
         setupPresentationWidgets();
     }

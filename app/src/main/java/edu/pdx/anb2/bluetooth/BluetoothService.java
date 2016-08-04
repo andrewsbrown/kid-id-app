@@ -24,27 +24,25 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
-import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.UUID;
 
 /**
- * This class does all the work for setting up and managing Bluetooth
+ * This class does all the work for setting up and managing BluetoothService
  * connections with other devices. It has a thread that listens for
  * incoming connections, a thread for connecting with a device, and a
  * thread for performing data transmissions when connected.
  */
-public class Bluetooth {
+public class BluetoothService {
     public static final int STATE_NONE = 0;       // we're doing nothing
     public static final int STATE_LISTEN = 1;     // now listening for incoming connections
     public static final int STATE_CONNECTING = 2; // now initiating an outgoing connection
     public static final int STATE_CONNECTED = 3;  // now connected to a remote device
 
-    private static final String LOG_TAG = "KidId:Bluetooth";
+    private static final String LOG_TAG = "KidId:BluetoothService";
     private static final String NAME_SECURE = "BluetoothChatSecure";
     private static final String NAME_INSECURE = "BluetoothChatInsecure";
     private static final UUID MY_UUID_SECURE = UUID.fromString("58f4b906-f19e-447f-9bfb-1379e13951f5");
@@ -59,11 +57,11 @@ public class Bluetooth {
     private ConnectedThread mConnectedThread;
     private int mState;
 
-    public Bluetooth(Handler handler){
+    public BluetoothService(Handler handler) {
         this(handler, new BluetoothSyncProtocol());
     }
 
-    public Bluetooth(Handler handler, BluetoothSyncProtocol protocol) {
+    public BluetoothService(Handler handler, BluetoothSyncProtocol protocol) {
         mProtocol = protocol;
         mHandler = handler;
         mAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -87,7 +85,7 @@ public class Bluetooth {
         }
     }
 
-    public BluetoothAdapter adapter(){
+    public BluetoothAdapter adapter() {
         return mAdapter;
     }
 
@@ -118,7 +116,7 @@ public class Bluetooth {
      * session in listening (server) mode. Called by the Activity onResume()
      */
     public synchronized void start() {
-        toast("Starting Bluetooth...");
+        toast("Starting BluetoothService...");
 
         // Cancel any thread attempting to make a connection
         if (mConnectThread != null) {
@@ -178,7 +176,7 @@ public class Bluetooth {
      * Stop all threads
      */
     public synchronized void stop() {
-        toast("Stopping Bluetooth...");
+        toast("Stopping BluetoothService...");
 
         if (mConnectThread != null) {
             mConnectThread.cancel();
@@ -203,7 +201,7 @@ public class Bluetooth {
     }
 
     /**
-     * Start the ConnectedThread to begin managing a Bluetooth connection
+     * Start the ConnectedThread to begin managing a BluetoothService connection
      *
      * @param socket The BluetoothSocket on which the connection was made
      * @param device The BluetoothDevice that has been connected
@@ -248,7 +246,7 @@ public class Bluetooth {
         toast("Connection failed");
 
         // Start the service over to restart listening mode
-        Bluetooth.this.start();
+        BluetoothService.this.start();
     }
 
     /**
@@ -258,7 +256,7 @@ public class Bluetooth {
         toast("Connection lost");
 
         // Start the service over to restart listening mode
-        Bluetooth.this.start();
+        BluetoothService.this.start();
     }
 
     /**
@@ -310,7 +308,7 @@ public class Bluetooth {
 
                 // If a connection was accepted
                 if (socket != null) {
-                    synchronized (Bluetooth.this) {
+                    synchronized (BluetoothService.this) {
                         switch (mState) {
                             case STATE_LISTEN:
                             case STATE_CONNECTING:
@@ -401,7 +399,7 @@ public class Bluetooth {
             }
 
             // Reset the ConnectThread because we're done
-            synchronized (Bluetooth.this) {
+            synchronized (BluetoothService.this) {
                 mConnectThread = null;
             }
 
@@ -445,9 +443,9 @@ public class Bluetooth {
                     mProtocol.listenForStateChange();
                 }
             } catch (IOException e) {
-                Log.e(LOG_TAG, "Failed while reading Bluetooth", e);
+                Log.e(LOG_TAG, "Failed while reading BluetoothService", e);
                 connectionLost();
-                Bluetooth.this.start();
+                BluetoothService.this.start();
             }
         }
 

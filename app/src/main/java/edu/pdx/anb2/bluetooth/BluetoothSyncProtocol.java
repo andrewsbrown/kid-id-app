@@ -1,7 +1,5 @@
 package edu.pdx.anb2.bluetooth;
 
-import android.util.Log;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;

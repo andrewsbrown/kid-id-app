@@ -1,8 +1,5 @@
 package edu.pdx.anb2.bluetooth;
 
-/**
- * Created by abrown on 8/1/2016.
- */
 public class BluetoothApplicationState {
     public final int illustration;
     public final boolean success;
