@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -25,6 +26,7 @@ import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -112,10 +114,20 @@ public class AdultModeActivity extends AppCompatActivity
     private void changeChildModeSuccess(boolean success) {
         final ImageView approvalButton = (ImageView) findViewById(R.id.childModeApprovalButton);
         assert approvalButton != null;
+
+        RelativeLayout canvas = (RelativeLayout) findViewById(R.id.childModeCanvas);
+        assert canvas != null;
+
         if (success) {
-            int successColor = getResources().getColor(R.color.success);
-            approvalButton.setColorFilter(successColor, PorterDuff.Mode.SRC_ATOP);
+            ColorDrawable backgroundColor = new ColorDrawable(getResources().getColor(R.color.pagingEnabledFaded));
+            canvas.setBackgroundDrawable(backgroundColor);
+
+            int buttonColor = getResources().getColor(R.color.success);
+            approvalButton.setColorFilter(buttonColor, PorterDuff.Mode.SRC_ATOP);
         } else {
+            ColorDrawable backgroundColor = new ColorDrawable(getResources().getColor(R.color.pagingDisabledFaded));
+            canvas.setBackgroundDrawable(backgroundColor);
+
             approvalButton.clearColorFilter();
         }
     }
