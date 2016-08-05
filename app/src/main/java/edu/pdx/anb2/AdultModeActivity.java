@@ -40,7 +40,7 @@ import edu.pdx.anb2.illustration.Illustration;
 public class AdultModeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private static final String TOAST_TAG = AdultModeActivity.class.getSimpleName();
+    private static final String LOG_TAG = AdultModeActivity.class.getSimpleName();
     private static final int REQUEST_ENABLE_BT = 23833;
     private BluetoothService bluetooth;
     private Toast lastToast;
@@ -74,7 +74,7 @@ public class AdultModeActivity extends AppCompatActivity
                         toast((String) msg.obj);
                         break;
                     default:
-                        Log.w(TOAST_TAG, "Unknown message type to handle");
+                        Log.w(LOG_TAG, "Unknown message type to handle");
                 }
             }
         };
@@ -89,6 +89,7 @@ public class AdultModeActivity extends AppCompatActivity
     }
 
     private void sendSync(BluetoothApplicationState state) {
+        Log.i(LOG_TAG, "Sending sync state: " + state);
         bluetooth.sendSync(state);
     }
 
@@ -98,9 +99,10 @@ public class AdultModeActivity extends AppCompatActivity
         setupChildModeApprovalButton();
     }
 
-    private void onReceivedSync(BluetoothApplicationState obj) {
-        changeChildModeIllustration(obj.illustration);
-        changeChildModeSuccess(obj.success);
+    private void onReceivedSync(BluetoothApplicationState state) {
+        Log.i(LOG_TAG, "Received sync state: " + state);
+        changeChildModeIllustration(state.illustration);
+        changeChildModeSuccess(state.success);
     }
 
     void changeChildModeIllustration(int image) {

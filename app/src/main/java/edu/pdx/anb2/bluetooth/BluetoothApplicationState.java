@@ -23,4 +23,12 @@ public class BluetoothApplicationState {
         result = 31 * result + (success ? 1 : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "BluetoothApplicationState{" +
+                "illustration=" + illustration +
+                ", success=" + success +
+                '}';
+    }
 }
