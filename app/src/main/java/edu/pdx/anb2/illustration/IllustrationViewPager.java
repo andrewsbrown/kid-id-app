@@ -1,6 +1,9 @@
 package edu.pdx.anb2.illustration;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
@@ -9,24 +12,69 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import edu.pdx.anb2.R;
+import edu.pdx.anb2.bluetooth.BluetoothApplicationState;
+import edu.pdx.anb2.bluetooth.BluetoothMessages;
+import edu.pdx.anb2.bluetooth.BluetoothService;
 
 public class IllustrationViewPager extends ViewPager {
 
+    private static final String LOG_TAG = IllustrationViewPager.class.getSimpleName();
     private volatile boolean allowPaging = false;
-    private int lastPage = 0;
+    private BluetoothService bluetooth;
+    private Toast lastToast;
+    private IllustrationImageAdapter adapter;
 
     public IllustrationViewPager(Context context) {
         super(context);
-        setAdapter(new IllustrationImageAdapter(context));
-        addOnPageChangeListener(new DisableOnScroll());
+        setup(context);
     }
 
     public IllustrationViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setAdapter(new IllustrationImageAdapter(context));
+        setup(context);
+    }
+
+    void setup(Context context) {
+        adapter = new IllustrationImageAdapter(context);
+        setAdapter(adapter);
         addOnPageChangeListener(new DisableOnScroll());
+
+        // setup message handler
+        Handler mHandler = new Handler(Looper.getMainLooper()) {
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case BluetoothMessages.SYNC_TAG:
+                        onReceivedSync((BluetoothApplicationState) msg.obj);
+                        break;
+                    case BluetoothMessages.TOAST_TAG:
+                        toast((String) msg.obj);
+                        break;
+                    default:
+                        Log.w(LOG_TAG, "Unknown message type to handle");
+                }
+            }
+        };
+
+        // setup bluetooth
+        bluetooth = BluetoothService.getInstance(mHandler);
+    }
+
+    private void toast(String text) {
+        if (lastToast != null) lastToast.cancel();
+        lastToast = Toast.makeText(getContext(), text, Toast.LENGTH_SHORT);
+        lastToast.show();
+    }
+
+    public void onReceivedSync(BluetoothApplicationState state) {
+        setIllustration(state.illustration);
+        setPaging(state.success);
+    }
+
+    public BluetoothApplicationState currentState() {
+        return new BluetoothApplicationState(Illustration.ALL[getCurrentItem()].image, allowPaging);
     }
 
     public boolean matches(String text) {
@@ -34,15 +82,26 @@ public class IllustrationViewPager extends ViewPager {
     }
 
     public void enablePaging() {
-        Log.d(IllustrationViewPager.class.getSimpleName(), "Enable paging");
-        allowPaging = true;
-        setBackgroundColor(getResources().getColor(R.color.pagingEnabled));
+        setPaging(true);
+        bluetooth.sendSync(currentState());
     }
 
     public void disablePaging() {
-        Log.d(IllustrationViewPager.class.getSimpleName(), "Disable paging");
-        allowPaging = false;
-        setBackgroundColor(getResources().getColor(R.color.pagingDisabled));
+        setPaging(false);
+        bluetooth.sendSync(currentState());
+    }
+
+    private void setPaging(boolean enabled) {
+        Log.d(LOG_TAG, "Set paging enabled: " + enabled);
+        allowPaging = enabled;
+        setBackgroundColor(getResources().getColor((enabled) ? R.color.pagingEnabled : R.color.pagingDisabled));
+    }
+
+    private void setIllustration(int illustration) {
+        int index = Illustration.find(illustration);
+        assert index != -1;
+        Object o = adapter.instantiateItem(this, index);
+        adapter.setPrimaryItem(this, index, o);
     }
 
     @Override
@@ -62,13 +121,14 @@ public class IllustrationViewPager extends ViewPager {
 
         @Override
         public void onPageSelected(int position) {
-
         }
 
         @Override
         public void onPageScrollStateChanged(int state) {
-            if(state == ViewPager.SCROLL_STATE_SETTLING){
-                disablePaging();
+            if (state == ViewPager.SCROLL_STATE_SETTLING) {
+                setPaging(false);
+            } else if (state == ViewPager.SCROLL_STATE_IDLE) {
+                bluetooth.sendSync(currentState());
             }
         }
     }

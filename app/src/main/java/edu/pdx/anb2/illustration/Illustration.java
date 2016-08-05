@@ -20,6 +20,13 @@ public class Illustration {
     public final int image;
     public final String name;
 
+    public static int find(int image) {
+        for (int i = 0; i < ALL.length; i++) {
+            if (ALL[i].image == image) return i;
+        }
+        return -1;
+    }
+
     public Illustration(int image, String name) {
         this.image = image;
         this.name = name;

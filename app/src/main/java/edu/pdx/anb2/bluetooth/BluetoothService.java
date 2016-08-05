@@ -48,22 +48,31 @@ public class BluetoothService {
     private static final UUID MY_UUID_SECURE = UUID.fromString("58f4b906-f19e-447f-9bfb-1379e13951f5");
     private static final UUID MY_UUID_INSECURE = UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
 
+    private static BluetoothService singleton;
+
     private final BluetoothAdapter mAdapter;
-    private final Handler mHandler;
     private final BluetoothSyncProtocol mProtocol;
     private AcceptThread mSecureAcceptThread;
     private AcceptThread mInsecureAcceptThread;
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
+    private Handler mHandler;
     private int mState;
 
-    public BluetoothService(Handler handler) {
-        this(handler, new BluetoothSyncProtocol());
+    public static BluetoothService getInstance(Handler handler){
+        if(singleton == null){
+            singleton = new BluetoothService();
+        }
+        singleton.mHandler = handler;
+        return singleton;
     }
 
-    public BluetoothService(Handler handler, BluetoothSyncProtocol protocol) {
+    BluetoothService() {
+        this(new BluetoothSyncProtocol());
+    }
+
+    BluetoothService(BluetoothSyncProtocol protocol) {
         mProtocol = protocol;
-        mHandler = handler;
         mAdapter = BluetoothAdapter.getDefaultAdapter();
         mState = STATE_NONE;
 
@@ -71,6 +80,7 @@ public class BluetoothService {
         mProtocol.onChange(new BluetoothSyncProtocol.OnChange() {
             @Override
             public void onChange(BluetoothApplicationState oldState, BluetoothApplicationState newState) {
+                assert mHandler != null;
                 mHandler.obtainMessage(BluetoothMessages.SYNC_TAG, newState).sendToTarget();
             }
         });
@@ -91,6 +101,7 @@ public class BluetoothService {
 
     private void toast(String text) {
         Log.i(LOG_TAG, text);
+        assert mHandler != null;
         mHandler.obtainMessage(BluetoothMessages.TOAST_TAG, text).sendToTarget();
     }
 

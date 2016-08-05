@@ -42,7 +42,6 @@ public class AdultModeActivity extends AppCompatActivity
 
     private static final String TOAST_TAG = AdultModeActivity.class.getSimpleName();
     private static final int REQUEST_ENABLE_BT = 23833;
-    private Handler mHandler;
     private BluetoothService bluetooth;
     private Toast lastToast;
     private int currentIllustration;
@@ -65,7 +64,7 @@ public class AdultModeActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         // setup message handler
-        mHandler = new Handler(Looper.getMainLooper()) {
+        Handler mHandler = new Handler(Looper.getMainLooper()) {
             public void handleMessage(Message msg) {
                 switch (msg.what) {
                     case BluetoothMessages.SYNC_TAG:
@@ -80,7 +79,7 @@ public class AdultModeActivity extends AppCompatActivity
             }
         };
 
-        bluetooth = new BluetoothService(mHandler);
+        bluetooth = BluetoothService.getInstance(mHandler);
         changeContentPanel(R.layout.content_presentation_mode);
         setupPresentationWidgets();
     }

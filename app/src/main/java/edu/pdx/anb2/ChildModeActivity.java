@@ -3,6 +3,8 @@ package edu.pdx.anb2;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,6 +14,9 @@ import android.widget.Toast;
 
 import edu.cmu.pocketsphinx.Hypothesis;
 import edu.cmu.pocketsphinx.RecognitionListener;
+import edu.pdx.anb2.bluetooth.BluetoothApplicationState;
+import edu.pdx.anb2.bluetooth.BluetoothMessages;
+import edu.pdx.anb2.bluetooth.BluetoothService;
 import edu.pdx.anb2.illustration.IllustrationViewPager;
 import edu.pdx.anb2.speech.SpeechRecognizerSingleton;
 
@@ -37,6 +42,7 @@ public class ChildModeActivity extends AppCompatActivity {
      * and a change of the status and navigation bar.
      */
     private static final int UI_ANIMATION_DELAY = 300;
+    public static final String LOG_TAG = ChildModeActivity.class.getSimpleName();
     private final Handler mHideHandler = new Handler();
     private View mContentView;
     private final Runnable mHidePart2Runnable = new Runnable() {
@@ -128,13 +134,13 @@ public class ChildModeActivity extends AppCompatActivity {
     }
 
     private void listen() {
-        Log.d(ChildModeActivity.class.getSimpleName(), "Start listening");
+        Log.d(LOG_TAG, "Start listening");
         SpeechRecognizerSingleton.getInstance().stop();
         SpeechRecognizerSingleton.getInstance().startListening(SpeechRecognizerSingleton.ANIMALS_GRAMMAR);
     }
 
     private void stopListening() {
-        Log.d(ChildModeActivity.class.getSimpleName(), "Stop listening");
+        Log.d(LOG_TAG, "Stop listening");
         SpeechRecognizerSingleton.getInstance().stop();
     }
 
